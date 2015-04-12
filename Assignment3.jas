@@ -1,0 +1,288 @@
+// Assignment3
+
+//1(a)
+.constant
+
+		OBJREF 0x10
+.end-constant
+
+.main
+
+.var
+	negate1
+	negate2
+.end-var
+	
+	LDC_W OBJREF
+	
+	//**********************************************************************************//
+	//																					//
+	// 		In order to perform individual tests, comment out test cases as necessary 	//
+	//																				  	//
+	//**********************************************************************************//
+	
+	// Multiply TestCase 1
+	// Both are Positive
+	BIPUSH 0x3						// push param1 (multiplier) for multiply to the stack
+	BIPUSH 0x2						// push param2 (multiplicand) for multiplier to the stack
+	INVOKEVIRTUAL multiply 			// calls the multiply function 
+	
+	// Multiply TestCase 2
+	// Both are Negative		
+	BIPUSH 0x-3						// push param1 (multiplier) for multiply to the stack
+	BIPUSH 0x-2						// push param2 (multiplicand) for multiplier to the stack
+	INVOKEVIRTUAL multiply 			// calls the multiply function 
+	
+	// Multiply TestCase 3
+	//First is Negative
+	BIPUSH 0x-3						// push param1 (multiplier) for multiply to the stack
+	BIPUSH 0x2						// push param2 (multiplicand) for multiplier to the stack
+	INVOKEVIRTUAL multiply	 		// calls the multiply function 
+	
+	// Multiply TestCase 4
+	//Second is Negative
+	BIPUSH 0x3						// push param1 (multiplier) for multiply to the stack
+	BIPUSH 0x-2						// push param2 (multiplicand) for multiplier to the stack
+	INVOKEVIRTUAL multiply 			// calls the multiply function 
+	
+	// Multiply TestCase 5
+	//One Value is zero 
+	BIPUSH 0x3						// push param1 (multiplier) for multiply to the stack
+	BIPUSH 0x0						// push param2 (multiplicand) for multiplier to the stack
+	INVOKEVIRTUAL multiply 			// calls the multiply function 
+	
+	
+	// Divide TestCase 1
+	//	Both are positive, quotient
+	BIPUSH 0x3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x0						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 2
+	//	Both are positive remainder
+	BIPUSH 0x3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x1						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 3
+	//	Both are negative, quotient
+	BIPUSH 0x-3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x-2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x0						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 4
+	//	Both are negative remainder
+	BIPUSH 0x-3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x-2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x1						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 5
+	//	one negative, quotient
+	BIPUSH 0x-3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x0						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 6
+	//	one negative remainder
+	BIPUSH 0x-3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x2						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x1						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	// Divide TestCase 7
+	//	Divisor is Zero, quotient ****note this will return a value of 0, for quotient or remainder in every case where the denominator is 0***
+	BIPUSH 0x3						// push param1 (dividend) for divide to the stack
+	BIPUSH 0x0						// push param2 (divisor) for divide to the stack
+	BIPUSH 0x0						// push param3 (quotient/remainder indicator) for divide to the stack
+	INVOKEVIRTUAL divide 			// calls the divide function
+	
+	HALT
+	
+	
+.end-main
+
+.method multiply(p1, p2)
+
+	.var
+				max					// higher value parameter... these will be the same if p1 = p2
+				min					// lower value parameter... these will be the same if p1 = p2
+				total				// place holder for the total
+				counter				// counter for comparing to min value
+				negvalue			// 0 = no negatives, 1 = 1 negative exists, 2 means 2 negatives exists
+	.end-var	
+	
+
+
+	BIPUSH 		0x0					// push 0 to the stack for initialization
+	ISTORE 		negvalue			// initialize negative value counter to 0
+	ILOAD 		p1					// push p1 onto the stack
+	IFLT 		p1Negate			// p1 is negative, negate it
+	goto 		p2NegCheck			// p1 is positive, check p2
+	
+p1Negate:
+	IINC 		negvalue 0x1		// increase negative value counter
+	ILOAD 		p1					// push p1 value to the stack
+	NEG								// negate p1 value
+	ISTORE 		p1					// store the negated value back to p1
+	
+
+p2NegCheck:
+	ILOAD 		p2					// push p2 onto the stack
+	IFLT 		p2Negate			//p2 is negative, negate it
+	goto 		bothArePositive	
+	
+p2Negate:	
+	IINC 		negvalue 0x1		// increase negative value counter
+	ILOAD 		p2					// push p2 value to the stack
+	NEG								// negate p2 value
+	ISTORE 		p2					// store the negated value back to p2
+	
+
+bothArePositive:					// both p1 and p2 are positive values
+	ILOAD 		p1					// push p1 to stack
+	ILOAD 		p2					// push p2 to stack
+	ISUB							// subtract p1 from p2 to determine max/min values
+	BIPUSH 		0x0					// push 0 onto the stack
+	ISTORE 		total				// initialize total to 0
+	BIPUSH 		0x0					// push 0 onto the stack
+	ISTORE 		counter				// initialize counter to 0
+	IFLT		p2IsMax 			// compare diff of p1-p2, then branch to p2IsMax if diff is less than 0
+						
+	// p1 is the max, or they are equal
+	ILOAD 		p2					// push p2 onto the stack
+	ILOAD 		p1					// push p1 onto the stack	
+	ISTORE 		max					// store p1 in max, aka the max value
+	ISTORE 		min					// store p2 in min, aka the min value
+	goto 		MultiplyAlgorithm
+	
+									// p2 is the max value
+p2IsMax:
+	ILOAD 		p1					// push p1 onto the stack
+	ILOAD 		p2					// push p2 onto the stack	
+	ISTORE 		max					// store p2 in max, aka the max value
+	ISTORE 		min					// store p1 in min, aka the min value
+	
+MultiplyAlgorithm:					// begin the multiply algorithm
+	ILOAD 		counter				// push counter to stack
+	ILOAD 		min					// push min value to stack
+	IF_ICMPEQ 	exit				// if min = counter, exit algorithm
+	ILOAD 		max					// push max to stack
+	ILOAD 		total				// push total to stack
+	IADD							// max + total
+	ISTORE 		total				// store added value to total
+	IINC 		counter 0x1			// increase counter by 1
+	goto 		MultiplyAlgorithm	
+
+exit:
+	ILOAD 		negvalue			// push negative value counter to stack
+	BIPUSH 		0x1					// push 1 to stack
+	IF_ICMPEQ 	negateFirst			// if negative value counter = 1, we must negate our result
+	goto 		finish
+	
+negateFirst:						// negate the result
+	ILOAD 		total				// push our result "total" to the stack
+	NEG								// negate the result
+	ISTORE 		total				// store negated value back to total
+
+finish:
+	ILOAD 		total				// return result to the stack
+	IRETURN
+	
+.end-method
+
+
+.method divide(top, bottom, return_type)
+
+	.var
+				top					// dividend
+				bottom				// divisor
+				total				// place holder for the total
+				counter				// counter for comparing to total value
+				negvalue			// 0 = no negatives, 1 = 1 negative exists, 2 means 2 negatives exists
+	.end-var
+
+
+// check divisor for an initial 0 value	
+
+
+	BIPUSH 		0x0
+	ISTORE 		total				// initialize total to 0
+	ILOAD 		bottom
+	IFEQ 		finish				// if the initial divisor is 0, we branch to finish which will push 0 to the stack
+	
+	BIPUSH 		0x0
+	ISTORE 		negvalue			// initialize negvalue to 0
+	BIPUSH 		0x0
+	ISTORE 		counter				// initialize COUNTER to 0
+	ILOAD 		top					// push top onto the stack
+	IFLT 		topNegate			// top is negative, negate it
+	goto 		bottomNegCheck		//	top is positive, check bottom
+	
+topNegate:							// negate the dividend
+	IINC 		negvalue 0x1		// increment the negative value counter	
+	ILOAD 		top					// load the dividend
+	NEG								// negate the dividend
+	ISTORE 		top					// store the negated value back to dividend
+
+bottomNegCheck:
+	ILOAD 		bottom				// push bottom onto the stack
+	//IFEQ 		finish				// check to see if divisor = 0
+	//ILOAD 		bottom				// push bottom onto the stack
+	IFLT 		bottomNegate		//bottom is negative, negate it
+	goto 		bothArePositive
+	
+bottomNegate:
+	IINC 		negvalue 0x1		// increase the negative value  counter
+	ILOAD 		bottom				// load the divisor
+	NEG								// negated the divisor
+	ISTORE 		bottom				// store the new divisor value
+
+bothArePositive:					// all values are positive 
+		
+	ILOAD 		top					// load the dividend		
+	ISTORE 		total				// made the total value = the dividend value
+
+DivideAlgorithm:
+
+	ILOAD 		total				// push total onto the stack
+	ILOAD 		bottom				// push bottom onto the stack
+	ISUB							// subtract bottom from total
+	DUP
+	IFLT  		detReturnVal		// determine
+		
+	ISTORE 		total				// store the total value
+	IINC 		counter 0x1			// add 1 to the counter
+	goto 		DivideAlgorithm
+		
+
+
+detReturnVal:						// determine if we will return the quotient or the remainder
+	ILOAD 		return_type			// check return type, 0 = quotient, 0 > = remainder
+	IFEQ 		returnQuotient		// if return_type = 0, return the quotient
+	goto		finish
+		
+
+returnQuotient:						// returning a quotient
+
+	ILOAD 		counter				// load the counter ie the quotient
+	ISTORE 		total				// store the quotient to the total value
+	ILOAD 		negvalue			//	check the negative value counter
+	BIPUSH 		0x1					// load 1 to compare to negative vallue counter
+	IF_ICMPEQ 	negateQuotient		// if negative value counter = 1, we must negate the quotient
+	goto 		finish		
+		
+negateQuotient:						// negating the quotient			
+	ILOAD 		total				// load the total value (now the quotient)	
+	NEG								// negate the total value (now the quotient)
+	ISTORE 		total				// store the negated total value back to total
+
+finish:
+	ILOAD 		total				// push total to the stack
+	IRETURN
+
+.end-method

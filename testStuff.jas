@@ -1,0 +1,8 @@
+
+.main
+
+	BIPUSH 0x5
+	BIPUSH 0x3
+	IADD
+	
+.end-main

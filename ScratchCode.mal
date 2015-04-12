@@ -1,0 +1,21 @@
+imul1	MAR = SP = SP - 1; rd		// Read in next-to-top word on stack
+imul2	H = TOS				// H = top of stack
+imul3	MDR = TOS = MDR - H; wr; 						//goto Main1	// Do subtraction; write to top of stack
+imul4	MAR = SP = SP - 1; rd		// Read in next-to-top word on stack
+imul5	OPC = TOS			// Save TOS in OPC temporarily
+imul6	TOS = MDR			// Put new top of stack in TOS
+imul7	N = OPC; if (N) goto imulT; else goto imulF	// Branch on N bit
+
+imulT	OPC = PC - 1; fetch; goto goto2	// Same as goto1; needed for target address
+
+imulF	PC = PC + 1			// Skip first offset byte
+imulF2	PC = PC + 1; fetch		// PC now points to next opcode
+imulF3	goto Main1			// Wait for fetch of opcode
+
+
+1	MAR = SP = SP - 1; rd	// Read in next-to-top word of stack
+2	MAR = SP = SP - 1	// Set MAR to read in new top-of-stack
+3	H = MDR; rd		// Copy second stack word to H
+4	OPC = TOS		// Save TOS in OPC temporarily
+5	TOS = MDR		// Put new top of stack in TOS
+6	OPC = Z = OPC - H; if (Z) goto T; else goto F	// If top 2 words are equal, goto T, else goto F
