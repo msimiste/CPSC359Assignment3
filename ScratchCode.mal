@@ -1,48 +1,49 @@
 imul1	MAR = SP - 1; rd						// Increment SP and copy to MAR
-imul2	MAR	= SP = SP + 1	//; wr
+imul2	MAR	= SP = SP + 1; wr
 							//MDR = TOS; wr
-imul	MAR = SP - 1; rd						// Increment SP and copy to MAR
-imul	MAR	= SP = SP + 1
-		MDR = TOS; wr
+imul3	MAR = SP - 1; rd						// Increment SP and copy to MAR
+imul4	MAR	= SP = SP + 1
+imul5	TOS = MDR; wr
 		
-isub1	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
-isub2	H = TOS									// H = top of stack
-isub3	MDR = TOS = MDR - H; wr;				// Do subtraction; write to top of stack		
+imul6	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
+imul7	H = TOS									// H = top of stack
+imul8	MDR = TOS = MDR - H; wr;				// Do subtraction; write to top of stack		
 
-iflt1	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
-iflt2	OPC = TOS								// Save TOS in OPC temporarily
-iflt3	TOS = MDR								// Put new top of stack in TOS
-iflt4	N = OPC; if (N) goto T1; else goto F1	// Branch on N bit
+imul9	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
+imul10	OPC = TOS								// Save TOS in OPC temporarily
+imul11	TOS = MDR								// Put new top of stack in TOS
+imul12	N = OPC; if (N) goto imul13; else goto imul19	// Branch on N bit
 
-// y<x, need to swap
-T1		MAR = SP - 1; rd						// Set MAR to SP - 1; read 2nd word from stack
-swap2	MAR = SP								// Set MAR to top word
-swap3	H = MDR; wr								// Save TOS in H; write 2nd word to top of stack
-swap4	MDR = TOS								// Copy old TOS to MDR
-swap5	MAR = SP - 1; wr						// Set MAR to SP - 1; write as 2nd word on stack
-swap6	TOS = H; goto Main1						// Update TOS
+//y<x, need to swap
+imul13	MAR = SP - 1; rd						// Set MAR to SP - 1; read 2nd word from stack
+imul14	MAR = SP								// Set MAR to top word
+imul15	H = MDR; wr								// Save TOS in H; write 2nd word to top of stack
+imul16	MDR = TOS								// Copy old TOS to MDR
+imul17	MAR = SP - 1; wr						// Set MAR to SP - 1; write as 2nd word on stack
+imul18	TOS = H 								// Update TOS
+
 
 //initalize total = 0
-		MAR = SP = SP + 1									//pointing at total
-		TOS = MDR = 0; wr
+imul19		MAR = SP = SP + 1									//pointing at total
+imul21		TOS = MDR = 0; wr
 		
-		MAR = SP - 1; rd;									//get min value from memory
-		OPC = MDR; 											// save min operand to OPC
-loop	N = OPC; if (N) goto myT1; else goto myF1			// if neg quit
-		Z = OPC; if (Z) goto myT2; else goto myF2 			// if zero quit
-		MAR = SP - 2; rd; 									// get max value
-		H = TOS												// H = top of stack
-		MAR = SP
-		MDR = TOS = MDR + H; wr								// Add top two words; write to top of stack
+imul22		MAR = SP - 1; rd;									//get min value from memory
+imul23		OPC = MDR; 											// save min operand to OPC
+//imul20	N = OPC; if (N) goto myT1; else goto myF1			// if neg quit
+imul24		Z = OPC; if (Z) goto imul30; else goto imul31 			// if zero quit
+imul25		MAR = SP - 2; rd; 									// get max value
+imul26		H = TOS												// H = top of stack
+imul27		MAR = SP
+imul28		MDR = TOS = MDR + H; wr								// Add top two words; write to top of stack
 
-		OPC = OPC - 1; goto loop 							// dec OPC and repeat
+imul29		OPC = OPC - 1; goto imul24 							// dec OPC and repeat
 		
 		
 		
-myT1    goto Main1
-myT2    goto Main1
-myF1    goto mdup4
-myF2    goto mdup5
+//myT1    	goto Main1
+imul30    	goto Main1
+//myF1    	goto mdup4
+imul31 		goto imul25
 		
 		
 

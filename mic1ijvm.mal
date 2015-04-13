@@ -45,6 +45,7 @@
 .label	out1		0xFD
 .label	in1			0xFC
 .label  inot1		0xB2
+.label 	imul1       0xB3
 
 // default instruction to place in any unused addresses of the control store
 .default	goto err1
@@ -245,3 +246,46 @@ in1	OPC=H=-1
 neg1 	H = TOS							// push H value to TOP of Stack
 neg2	MAR = SP						// SET MAR = Stack Pointer
 neg3	TOS = MDR = -H; wr; goto Main1 // negating H value and writing it to MAR
+
+imul1	MAR = SP - 1; rd						// Increment SP and copy to MAR
+imul2	MAR	= SP = SP + 1; wr					//MDR = TOS; wr							
+imul3	MAR = SP - 1; rd						// Increment SP and copy to MAR
+imul4	MAR	= SP = SP + 1
+imul5	TOS = MDR; wr		
+imul6	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
+imul7	H = TOS									// H = top of stack
+imul8	MDR = TOS = MDR - H; wr				// Do subtraction; write to top of stack
+
+imul9	MAR = SP = SP - 1; rd					// Read in next-to-top word on stack
+imul10	OPC = TOS								// Save TOS in OPC temporarily
+imul11	TOS = MDR								// Put new top of stack in TOS
+imul12	N = OPC; if (N) goto imul13; else goto imul19	// Branch on N bit
+
+//y<x, need to swap
+imul13	MAR = SP - 1; rd						// Set MAR to SP - 1; read 2nd word from stack
+imul14	MAR = SP								// Set MAR to top word
+imul15	H = MDR; wr								// Save TOS in H; write 2nd word to top of stack
+imul16	MDR = TOS								// Copy old TOS to MDR
+imul17	MAR = SP - 1; wr						// Set MAR to SP - 1; write as 2nd word on stack
+imul18	TOS = H 								// Update TOS
+								
+//initalize total = 0
+imul19		MAR = SP = SP + 1									//pointing at total
+imul21		TOS = MDR = 0; wr
+		
+imul22		MAR = SP - 1; rd									//get min value from memory
+
+imul23		SP = SP - 1
+imul24		OPC = MDR 											// save min operand to OPC
+imul25		Z = OPC; if (Z) goto imul31; else goto imul26 			// if zero quit
+imul26		MAR = SP - 1; rd 									// get max value
+imul27		H = TOS												// H = top of stack
+imul28		MAR = SP + 1
+imul29		MDR = TOS = MDR + H; wr								// Add top two words; write to top of stack
+
+imul30		OPC = OPC - 1; goto imul25 							// dec OPC and repeat
+
+imul31		MAR = SP + 1; rd
+imul32		MAR = SP = SP - 1; wr
+
+imul33		TOS=MDR; goto Main1	
